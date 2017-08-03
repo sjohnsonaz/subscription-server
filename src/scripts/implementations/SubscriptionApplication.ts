@@ -23,18 +23,7 @@ export default class NotificationApplication extends Application<Express.Router,
     }
 
     connectDatabase() {
-        return new Promise<boolean>((resolve, reject) => {
-            (mongoose as any).Promise = global.Promise;
-            mongoose.connect(this.config.mongodb.uri, this.config.mongodb.options, (err) => {
-                if (err) {
-                    console.log('ERROR connecting to: ' + this.config.mongodb.uri + '. ' + err);
-                    reject(err);
-                } else {
-                    console.log('Succeeded connected to: ' + this.config.mongodb.uri);
-                    resolve(true);
-                }
-            });
-        });
+        return Promise.resolve(true);
     }
 
     addMiddleware() {
@@ -86,6 +75,14 @@ export default class NotificationApplication extends Application<Express.Router,
     }
 
     listen() {
+        this.app.use((err, req, res, next) => {
+            res.status(500);
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify({
+                error: err
+            }));
+        });
+
         return new Promise<boolean>((resolve, reject) => {
             this.server = http.createServer(this.app);
             this.server.listen(this.port);
