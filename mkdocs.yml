@@ -1,0 +1,7 @@
+site_name: Subscription Server
+site_url: https://sjohnsonaz.github.io/subscription-server
+repo_url: https://github.com/sjohnsonaz/subscription-server
+copyright: Copyright &copy; 2017 Sean Johnson
+pages:
+    - Home: index.md
+theme: readthedocs
