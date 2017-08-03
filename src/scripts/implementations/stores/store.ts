@@ -1,64 +1,76 @@
 import * as DataStore from 'nedb';
 
-import { ISubscription, ISubscriptionDocument } from '../../interfaces/data/ISubscription';
+import { IDocument } from '../../interfaces/IDocument';
 
-export default class Store {
+export default class Store<T> {
     db: DataStore;
 
     constructor(db: DataStore) {
         this.db = db;
     }
 
-    saveSubscriptionToDatabase(subscription: ISubscription) {
+    get(id: string) {
+        return new Promise<T & IDocument>((resolve, reject) => {
+            this.db.findOne({ _id: id }, (err, doc: T & IDocument) => {
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                } else {
+                    resolve(doc);
+                }
+            });
+        });
+    }
+
+    list(query: Object) {
+        return new Promise<(T & IDocument)[]>((resolve, reject) => {
+            this.db.find(query, (err, docs: (T & IDocument)[]) => {
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                } else {
+                    resolve(docs);
+                }
+            });
+        });
+    }
+
+    create(item: T) {
         return new Promise<string>((resolve, reject) => {
-            this.db.find({ endpoint: subscription.endpoint }, (err, docs: ISubscriptionDocument[]) => {
+            this.db.insert(item, (err, newDoc: T & IDocument) => {
                 if (err) {
                     console.log(err);
                     reject(err);
                     return;
                 }
 
-                if (docs && docs.length) {
-                    resolve(docs[0]._id);
-                } else {
-                    this.db.insert(subscription, (err, newDoc: ISubscriptionDocument) => {
-                        if (err) {
-                            console.log(err);
-                            reject(err);
-                            return;
-                        }
-
-                        resolve(newDoc._id);
-                    });
-                }
+                resolve(newDoc._id);
             });
         });
     };
 
-    getSubscriptionsFromDatabase() {
-        return new Promise<ISubscriptionDocument[]>((resolve, reject) => {
-            this.db.find({}, (err, docs: ISubscriptionDocument[]) => {
+    update(id: string, item: T) {
+        return new Promise<number>((resolve, reject) => {
+            this.db.update({ _id: id }, item, (err, numberofUpdated) => {
                 if (err) {
                     console.log(err);
                     reject(err);
-                    return
+                } else {
+                    resolve(numberofUpdated);
                 }
-
-                resolve(docs);
             });
         });
     }
 
-    deleteSubscriptionFromDatabase(id: string) {
+    delete(id: string) {
         return new Promise<number>((resolve, reject) => {
             this.db.remove({ _id: id }, {}, (err, numRemoved) => {
                 if (err) {
                     console.log(err);
                     reject(err);
-                    return
+                } else {
+                    resolve(numRemoved);
                 }
-
-                resolve(numRemoved);
             });
         })
     }

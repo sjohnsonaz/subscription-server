@@ -2,7 +2,7 @@ import * as Datastore from 'nedb';
 
 import Config from './config';
 import SubscriptionService from './implementations/services/SubscriptionService';
-import Store from './implementations/stores/store';
+import SubscriptionStore from './implementations/stores/SubscriptionStore';
 
 import SubscriptionApplication from './implementations/SubscriptionApplication';
 
@@ -13,7 +13,7 @@ export function run() {
         filename: './data/subscriptionData.txt'
     });
     db.loadDatabase();
-    const store = new Store(db);
+    const store = new SubscriptionStore(db);
     const subscriptionService = new SubscriptionService(store);
 
     application.addController(subscriptionService);

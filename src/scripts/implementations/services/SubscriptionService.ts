@@ -1,7 +1,7 @@
 import * as Express from 'express';
 import { Controller, route } from 'sierra';
 
-import Store from '../stores/store';
+import Store from '../stores/SubscriptionStore';
 
 export default class SubscriptionService extends Controller<Express.Router, Express.RequestHandler> {
     store: Store;
@@ -24,7 +24,7 @@ export default class SubscriptionService extends Controller<Express.Router, Expr
             return;
         }
 
-        return this.store.saveSubscriptionToDatabase(req.body)
+        return this.store.create(req.body)
             .then((subscriptionId) => {
                 res.setHeader('Content-Type', 'application/json');
                 res.send(JSON.stringify({ data: { success: true } }));
