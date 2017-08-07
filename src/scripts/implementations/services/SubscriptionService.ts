@@ -14,9 +14,13 @@ export default class SubscriptionService extends Controller<Express.Router, Expr
     @route('get', '/api/subscription/', false)
     async list(req, res, next) {
         try {
-            let subscriptionId = await this.store.list(req.query);
+            let subscriptions = await this.store.list(req.query);
+            let results = {
+                DataList: subscriptions,
+                TotalCount: subscriptions.length
+            };
             res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(subscriptionId));
+            res.send(JSON.stringify(results));
         } catch (err) {
             next(err);
         }
